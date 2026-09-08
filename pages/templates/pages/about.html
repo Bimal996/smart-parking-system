@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}About Us — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section
+  class="section bg-asphalt"
+  style="padding-top: 64px; padding-bottom: 48px"
+>
+  <div class="container-sps">
+    <div class="section-eyebrow" style="color: var(--sensor-amber)">
+      About us
+    </div>
+    <h1 style="color: var(--lane-white); font-size: 2.4rem; max-width: 640px">
+      Built by one student who wanted parking to feel effortless.
+    </h1>
+    <p style="color: var(--ink-400); max-width: 600px; font-size: 1.02rem">
+      {{ site.SITE_NAME }} started as a BITM university project focused on a
+      very ordinary problem: finding a parking spot in Dhangadhi and across
+      Nepal shouldn't take longer than the errand you came for. This page covers
+      why it was built, what the system actually does, and who is behind it.
+    </p>
+  </div>
+</section>
+
+<section class="section bg-panel">
+  <div class="container-sps">
+    <div class="section-head">
+      <div class="section-eyebrow">Our mission</div>
+      <h2>Turning parking lots into visible, reservable infrastructure</h2>
+      <p>
+        Many lots in Nepal still track occupancy with a notebook, if at all.
+        Drivers can't tell whether a lot is full until they're at the gate, and
+        lot owners have no easy way to see demand patterns or collect digital
+        payments. Our goal with this project was to fix that end to end: a live
+        slot map, a reservation system with transparent pricing, and payment
+        options people in Nepal already trust &mdash; eSewa, Khalti, and cash.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section tight" style="background: var(--concrete-100)">
+  <div class="container-sps">
+    <div class="section-head">
+      <div class="section-eyebrow">Project timeline</div>
+      <h2>How we got here</h2>
+    </div>
+    <div class="steps-row">
+      {% for m in milestones %}
+      <div class="step-card">
+        <div class="step-num">{{ forloop.counter|stringformat:"02d" }}</div>
+        <h3>{{ m.title }}</h3>
+        <p>{{ m.detail }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section bg-panel">
+  <div class="container-sps">
+    <div class="section-head">
+      <div class="section-eyebrow">About the developer</div>
+      <h2>The developer behind the project</h2>
+      <p>
+        ParkSmart Nepal was designed and developed independently by Bimal Mahara,
+        a BITM student of Sudur Paschimanchal Campus.
+      </p>
+    </div>
+    <div class="lot-grid">
+      {% for member in team %}
+      <div class="lot-card" style="text-align: center">
+        <div class="lot-card-body" style="padding-top: 28px">
+          <div
+            style="
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              background: var(--asphalt-950);
+              color: var(--sensor-amber);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-family: var(--font-display);
+              font-weight: 700;
+              font-size: 1.3rem;
+              margin: 0 auto 16px;
+            "
+          >
+            {{ member.name|slice:":1" }}
+          </div>
+          <h3>{{ member.name }}</h3>
+          <p
+            style="
+              color: var(--sensor-amber-dark);
+              font-weight: 600;
+              font-size: 0.88rem;
+              margin-bottom: 10px;
+            "
+          >
+            {{ member.role }}
+          </p>
+          <p class="lot-address" style="margin-bottom: 0">{{ member.focus }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section tight bg-asphalt">
+  <div class="container-sps" style="text-align: center">
+    <h2 style="color: var(--lane-white)">Want to see it in action?</h2>
+    <p style="color: var(--ink-400); margin-bottom: 24px">
+      Browse live lots or reach out with questions about the project.
+    </p>
+    <div
+      style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap"
+    >
+      <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber"
+        >Browse parking lots</a
+      >
+      <a href="{% url 'pages:contact' %}" class="btn-sps-outline"
+        >Contact the developer</a
+      >
+    </div>
+  </div>
+</section>
+
+{% endblock %}

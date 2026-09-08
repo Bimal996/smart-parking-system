@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Booking {{ reservation.reference }} — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section">
+  <div class="container-sps" style="max-width:640px;">
+    <a href="{% url 'reservations:my_bookings' %}" style="color:var(--ink-600); font-size:0.88rem;">&larr; Back to my bookings</a>
+
+    <div class="sps-card mt-3">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+        <div>
+          <h2 style="font-size:1.35rem; margin-bottom:4px;">{{ reservation.lot.name }}</h2>
+          <p style="color:var(--ink-600); font-size:0.9rem;">Reference: {{ reservation.reference }}</p>
+        </div>
+        {% if reservation.status == "pending_payment" %}
+          <span class="badge-status badge-pending">Pending payment</span>
+        {% elif reservation.status == "confirmed" %}
+          <span class="badge-status badge-confirmed">Confirmed</span>
+        {% elif reservation.status == "completed" %}
+          <span class="badge-status badge-completed">Completed</span>
+        {% else %}
+          <span class="badge-status badge-cancelled">Cancelled</span>
+        {% endif %}
+      </div>
+
+
+      <div class="row" style="margin-bottom:20px;">
+        <div class="col-6" style="font-size:0.9rem;">
+          <div style="color:var(--ink-600);">Vehicle</div>
+          <div style="font-weight:600;">{{ reservation.vehicle_number }} ({{ reservation.get_vehicle_type_display }})</div>
+        </div>
+        <div class="col-6" style="font-size:0.9rem;">
+          <div style="color:var(--ink-600);">Assigned slot</div>
+          <div style="font-weight:600;">{{ reservation.slot.slot_number|default:"Not assigned" }}</div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:20px;">
+        <div class="col-6" style="font-size:0.9rem;">
+          <div style="color:var(--ink-600);">Start time</div>
+          <div style="font-weight:600;">{{ reservation.start_time|date:"d M Y, g:i A" }}</div>
+        </div>
+        <div class="col-6" style="font-size:0.9rem;">
+          <div style="color:var(--ink-600);">End time</div>
+          <div style="font-weight:600;">{{ reservation.end_time|date:"d M Y, g:i A" }}</div>
+        </div>
+      </div>
+
+      <div class="price-readout mb-4">
+        <div class="row-line"><span>Duration</span><span>{{ reservation.duration_hours }} hr</span></div>
+        <div class="row-line"><span>Rate</span><span>Rs. {{ reservation.hourly_rate }} / hr</span></div>
+        <div style="margin-top:10px; font-size:0.82rem; color:var(--ink-400);">Total amount</div>
+        <div class="amount">Rs. {{ reservation.total_amount }}</div>
+      </div>
+
+      {% if reservation.status == "pending_payment" %}
+        <a href="{% url 'payments:choose' reservation.reference %}" class="btn-sps-amber btn-block-amber mb-3">Complete payment</a>
+        <form method="post" action="{% url 'reservations:cancel' reservation.reference %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-sps-outline btn-block-amber">Cancel reservation</button>
+        </form>
+      {% elif reservation.status == "confirmed" %}
+        <div class="sps-alert success" style="position:static;">You're all set — drive to slot {{ reservation.slot.slot_number|default:"—" }} at {{ reservation.lot.name }}.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

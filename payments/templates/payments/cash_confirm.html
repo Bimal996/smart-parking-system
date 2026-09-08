@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Pay with cash — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section" style="min-height:60vh; display:flex; align-items:center;">
+  <div class="container-sps" style="max-width:440px; text-align:center;">
+    <div class="sps-card">
+      <div style="width:52px; height:52px; border-radius:50%; background:var(--traffic-blue-soft); color:var(--traffic-blue-deep); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:1.4rem;">₨</div>
+      <h3>Reserve now, pay at the gate</h3>
+      <p style="color:var(--ink-600); font-size:0.9rem; margin-bottom:20px;">
+        We'll hold slot {{ reservation.slot.slot_number }} at {{ reservation.lot.name }} for you.
+        Please pay <strong>Rs. {{ reservation.total_amount }}</strong> in cash when you arrive.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-sps-amber btn-block-amber">Confirm reservation</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

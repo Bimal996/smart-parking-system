@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Pay with Khalti — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section" style="min-height:60vh; display:flex; align-items:center;">
+  <div class="container-sps" style="max-width:440px; text-align:center;">
+    <div class="sps-card">
+      <div style="width:52px; height:52px; border-radius:50%; background:#F4E9FF; color:#7E3FF2; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:1.4rem;">K</div>
+      <h3>Pay with Khalti</h3>
+      <p style="color:var(--ink-600); font-size:0.9rem; margin-bottom:6px;">
+        Reservation {{ reservation.reference }} &bull; Amount due: <strong>Rs. {{ reservation.total_amount }}</strong>
+      </p>
+      <div class="sps-alert warning mb-3" style="position:static; text-align:left;">
+        Demo mode: no live Khalti merchant key is configured, so this simulates the KPG-2 checkout.
+        Add <code>KHALTI_SECRET_KEY</code> to your environment to enable real Khalti payments.
+      </div>
+      <form method="post" action="{% url 'payments:khalti_demo_confirm' reservation.reference %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-sps-amber btn-block-amber">Simulate successful payment</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

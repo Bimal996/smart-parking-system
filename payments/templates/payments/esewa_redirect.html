@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Redirecting to eSewa — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section" style="min-height:60vh; display:flex; align-items:center;">
+  <div class="container-sps" style="max-width:440px; text-align:center;">
+    <div class="sps-card">
+      <div style="width:52px; height:52px; border-radius:50%; background:#E4F8ED; color:var(--signal-green); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:1.4rem;">₨</div>
+      <h3>Redirecting you to eSewa&hellip;</h3>
+      <p style="color:var(--ink-600); font-size:0.9rem; margin-bottom:20px;">
+        You're being sent to eSewa's secure payment page to pay Rs. {{ reservation.total_amount }} for reservation {{ reservation.reference }}.
+        This is eSewa's official test (UAT) gateway.
+      </p>
+      <form id="esewa-form" method="POST" action="{{ esewa_url }}">
+        {% for key, value in payload.items %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+        <button type="submit" class="btn-sps-amber btn-block-amber">Continue to eSewa</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Auto-submit for a seamless redirect; the visible button is a fallback
+  // in case JavaScript-triggered auto-submit is blocked by the browser.
+  setTimeout(function () {
+    document.getElementById("esewa-form").submit();
+  }, 900);
+</script>
+
+{% endblock %}

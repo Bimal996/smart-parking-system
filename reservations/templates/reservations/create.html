@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Reserve a slot — {{ lot.name }}{% endblock %}
+{% block content %}
+
+<section class="section">
+  <div class="container-sps" style="max-width:900px;">
+    <div class="section-eyebrow">Reserve a slot</div>
+    <h2 class="mb-1">{{ lot.name }}</h2>
+    <p style="color:var(--ink-600); margin-bottom:32px;">{{ lot.address }}</p>
+
+    <div class="reservation-layout" style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:28px;">
+      <form method="post" class="sps-card">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="sps-alert danger mb-3" style="position:static;">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <div class="mb-3">
+          <label for="{{ form.vehicle_type.id_for_label }}">Vehicle type</label>
+          {{ form.vehicle_type }}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.vehicle_number.id_for_label }}">Vehicle number</label>
+          {{ form.vehicle_number }}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.selected_slot.id_for_label }}">Choose your parking slot</label>
+          {{ form.selected_slot }}
+          {% if form.selected_slot.errors %}<div class="text-danger form-error">{{ form.selected_slot.errors.0 }}</div>{% endif %}
+          <div class="reservation-slot-map" aria-label="Available parking slots">
+            {% for slot in slots %}
+              <button type="button" class="reservation-slot-chip {% if slot.status != 'available' %}unavailable{% endif %}" data-slot-number="{{ slot.slot_number }}" {% if slot.status != 'available' %}disabled{% endif %}>
+                <span>{{ slot.slot_number }}</span>
+              </button>
+            {% endfor %}
+          </div>
+          <p class="slot-map-note">Select any available slot from the map or dropdown.</p>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.start_time.id_for_label }}">Start time</label>
+            {{ form.start_time }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.end_time.id_for_label }}">End time</label>
+            {{ form.end_time }}
+          </div>
+        </div>
+        {% if form.errors and not form.non_field_errors %}
+          <div class="sps-alert danger mb-3" style="position:static;">Please check the highlighted fields.</div>
+        {% endif %}
+        <button type="submit" class="btn-sps-amber btn-block-amber">Continue to payment</button>
+      </form>
+
+      <div>
+        <div id="live-price-box" class="price-readout" data-rate-bike="{{ lot.hourly_rate_bike }}" data-rate-car="{{ lot.hourly_rate_car }}">
+          <div style="font-size:0.82rem; color:var(--ink-400); margin-bottom:6px;">Estimated total</div>
+          <div class="amount" id="price-total">Rs. 0</div>
+          <div style="margin-top:16px;">
+            <div class="row-line"><span>Duration</span><span id="price-duration">—</span></div>
+            <div class="row-line"><span>Rate</span><span id="price-rate">—</span></div>
+          </div>
+        </div>
+        <p style="color:var(--ink-600); font-size:0.85rem; margin-top:14px;">
+          Price updates automatically as you change the vehicle type or time window. You'll pay on the next screen via eSewa, Khalti, or cash at the gate.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

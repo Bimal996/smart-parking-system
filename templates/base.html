@@ -1,0 +1,371 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}{{ site.SITE_NAME }} — {{ site.SITE_TAGLINE }}{% endblock%}
+    </title>
+    <meta
+      name="description"
+      content="{{ site.SITE_NAME }} is a smart parking reservation platform for Dhangadhi and communities across Nepal — find, reserve, and pay for parking in seconds."
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("parksmart-theme");
+        if (savedTheme === "dark")
+          document.documentElement.dataset.theme = "dark";
+      })();
+    </script>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- ============================== NAVBAR ============================== -->
+    <nav class="sps-navbar">
+      <div class="container-sps">
+        <a href="{% url 'pages:home' %}" class="sps-brand">
+          <span class="mark">P</span>
+          {{ site.SITE_NAME }}
+        </a>
+
+        <ul class="sps-nav-links">
+          <li>
+            <a
+              href="{% url 'pages:home' %}"
+              class="{% if request.resolver_match.view_name == 'pages:home' %}active{% endif %}"
+              >Dashboard</a
+            >
+          </li>
+          <li>
+            <a
+              href="{% url 'parking:lot_list' %}"
+              class="{% if 'parking' in request.resolver_match.namespace|default:'' %}active{% endif %}"
+              >Find Parking</a
+            >
+          </li>
+          {% if user.is_authenticated %}
+          <li>
+            <a
+              href="{% url 'reservations:my_bookings' %}"
+              class="{% if 'reservations' in request.resolver_match.namespace|default:'' %}active{% endif %}"
+              >My Bookings</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <div class="sps-nav-actions">
+          <button
+            type="button"
+            class="theme-toggle"
+            data-theme-toggle
+            aria-label="Switch to dark theme"
+            aria-pressed="false"
+            title="Switch theme"
+          >
+            <svg
+              class="theme-icon theme-icon-sun"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+              ></path>
+            </svg>
+            <svg
+              class="theme-icon theme-icon-moon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+            </svg>
+            <span class="visually-hidden" data-theme-label>Dark theme</span>
+          </button>
+          {% if user.is_authenticated %}
+          <a
+            href="{% url 'accounts:profile' %}"
+            class="btn-sps-outline"
+            style="padding: 9px 16px"
+            >Hi, {{ user.first_name|default:user.username }}</a
+          >
+          <button
+            type="button"
+            class="btn-sps-amber"
+            data-bs-toggle="modal"
+            data-bs-target="#logoutModal"
+          >
+            Log out
+          </button>
+          {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn-sps-outline"
+            >Log in</a
+          >
+          <a href="{% url 'accounts:signup' %}" class="btn-sps-amber"
+            >Sign up</a
+          >
+          {% endif %}
+          <button
+            class="navbar-toggler-sps"
+            type="button"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================== MESSAGES ============================== -->
+    {% if messages %}
+    <div class="sps-alert-wrap">
+      {% for message in messages %}
+      <div class="sps-alert {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ============================== PAGE CONTENT ============================== -->
+    <main>{% block content %}{% endblock %}</main>
+
+    {% if not user.is_authenticated %}
+    <!-- ============================== PUBLIC FOOTER ============================== -->
+    <footer class="sps-footer">
+      <div class="container-sps">
+        <div class="footer-grid">
+          <div>
+            <a
+              href="{% url 'pages:home' %}"
+              class="sps-brand"
+              style="margin-bottom: 14px"
+            >
+              <span class="mark">P</span>{{ site.SITE_NAME }}
+            </a>
+            <p style="font-size: 0.9rem; max-width: 260px; margin-top: 14px">
+              A smarter way to find, reserve, and pay for parking in Dhangadhi
+              and across Nepal — built to make every journey easier.
+            </p>
+            <div class="footer-social">
+              <a
+                href="{{ site.SOCIAL_FACEBOOK }}"
+                target="_blank"
+                rel="noopener"
+                aria-label="Facebook"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="{{ site.SOCIAL_INSTAGRAM }}"
+                target="_blank"
+                rel="noopener"
+                aria-label="Instagram"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.3.6-.6 1-1 1.5-.5.4-1 .7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.4-.5.2-.8.4-1.2.7-.3.3-.5.6-.7 1.2-.1.3-.3.9-.4 1.9-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .3 1.6.4 1.9.2.5.4.9.7 1.2.3.3.7.5 1.2.7.3.1.9.3 1.9.4 1.2.1 1.5.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.3 1.9-.4.5-.2.9-.4 1.2-.7.3-.3.5-.7.7-1.2.1-.3.3-.9.4-1.9.1-1.2.1-1.5.1-4.7s0-3.5-.1-4.7c-.1-1-.3-1.6-.4-1.9-.2-.5-.4-.9-.7-1.2-.3-.3-.7-.5-1.2-.7-.3-.1-.9-.3-1.9-.4-1.2-.1-1.5-.1-4.7-.1Zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Zm5.2-2a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="{{ site.SOCIAL_TWITTER }}"
+                target="_blank"
+                rel="noopener"
+                aria-label="Twitter / X"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M18.9 3H22l-7.2 8.2L23 21h-6.6l-5.2-6.4L5 21H2l7.7-8.8L1.6 3h6.7l4.7 5.8L18.9 3Zm-1.2 16h1.8L7.4 5h-1.9l12.2 14Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="{{ site.SOCIAL_LINKEDIN }}"
+                target="_blank"
+                rel="noopener"
+                aria-label="LinkedIn"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M6.9 8.6H3.4V21h3.5V8.6ZM5.2 3.1a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM21 21v-6.8c0-3.6-1.9-5.3-4.5-5.3-2.1 0-3 1.1-3.5 1.9V8.6h-3.5S9.5 8.7 9.5 21H13v-6.6c0-.4 0-.7.1-1 .3-.7 1-1.5 2.1-1.5 1.5 0 2.1 1.1 2.1 2.8V21H21Z"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h5>Explore</h5>
+            <ul>
+              <li><a href="{% url 'pages:home' %}">Home</a></li>
+              <li><a href="{% url 'parking:lot_list' %}">Find Parking</a></li>
+              <li><a href="{% url 'pages:about' %}">About Us</a></li>
+              <li><a href="{% url 'pages:contact' %}">Contact</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5>Account</h5>
+            <ul>
+              {% if user.is_authenticated %}
+              <li>
+                <a href="{% url 'reservations:my_bookings' %}">My Bookings</a>
+              </li>
+              <li><a href="{% url 'accounts:profile' %}">My Profile</a></li>
+              {% else %}
+              <li><a href="{% url 'accounts:login' %}">Log in</a></li>
+              <li><a href="{% url 'accounts:signup' %}">Sign up</a></li>
+              {% endif %}
+              <li><a href="{% url 'admin:index' %}">Admin Portal</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5>Contact</h5>
+            <ul class="footer-contact-list">
+              <li>
+                Address: Dhangadhi {{ site.SUPPORT_ADDRESS }}
+              </li>
+              <li>
+                Phone: +977 91-234-47
+                <a href="tel:{{ site.SUPPORT_PHONE }}">{{ site.SUPPORT_PHONE }}</a>
+              </li>
+              <li>
+                Mobile: +977 9865818816
+                <a href="tel:{{ site.SUPPORT_PHONE_ALT }}">{{ site.SUPPORT_PHONE_ALT }}</a>
+              </li>
+              <li>
+                Email: smartpark@gmail.com.np
+                <a href="mailto:{{ site.SUPPORT_EMAIL }}">{{ site.SUPPORT_EMAIL }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span
+            >&copy; {% now "Y" %} {{ site.SITE_NAME }}. All rights
+            reserved.</span
+          >
+          <span
+            >Built as a BITM university project &mdash; Smart Parking
+            System</span
+          >
+        </div>
+      </div>
+    </footer>
+    {% endif %}
+
+    <!-- ============================== LOGOUT CONFIRMATION MODAL ============================== -->
+    <div
+      class="modal fade"
+      id="logoutModal"
+      tabindex="-1"
+      aria-labelledby="logoutModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content sps-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm log out</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center py-4">
+            <div class="modal-icon">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </div>
+            <p class="mb-0">
+              Are you sure you want to log out of your ParkSmart account?
+            </p>
+            <p class="text-muted" style="font-size: 0.85rem">
+              Any parking reservation in progress will be saved.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn-sps-outline"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <form
+              method="post"
+              action="{% url 'accounts:logout' %}"
+              style="margin: 0"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn-sps-amber">Yes, log out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

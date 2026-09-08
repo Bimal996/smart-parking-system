@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Find Parking — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section bg-asphalt" style="padding-top:56px; padding-bottom:40px;">
+  <div class="container-sps">
+    <div class="section-eyebrow" style="color:var(--sensor-amber);">Find parking</div>
+    <h1 style="color:var(--lane-white); font-size:2.1rem; margin-bottom:26px;">Browse available lots</h1>
+
+    <form method="get" class="sps-card parking-filters" style="background:var(--asphalt-900); border-color:var(--asphalt-700); display:grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap:14px; align-items:end; padding:20px;">
+      <div>
+        <label style="color:var(--ink-200);">Search</label>
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Lot name or address" style="background:var(--asphalt-800); border-color:var(--asphalt-600); color:var(--lane-white);">
+      </div>
+      <div>
+        <label style="color:var(--ink-200);">City</label>
+        <select name="city" class="form-select" style="background:var(--asphalt-800); border-color:var(--asphalt-600); color:var(--lane-white);">
+          <option value="">All cities</option>
+          {% for value, label in city_choices %}
+            <option value="{{ value }}" {% if city == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label style="color:var(--ink-200);">Feature</label>
+        <select name="feature" class="form-select" style="background:var(--asphalt-800); border-color:var(--asphalt-600); color:var(--lane-white);">
+          <option value="">Any feature</option>
+          <option value="ev" {% if feature == "ev" %}selected{% endif %}>EV charging</option>
+          <option value="covered" {% if feature == "covered" %}selected{% endif %}>Covered parking</option>
+          <option value="cctv" {% if feature == "cctv" %}selected{% endif %}>CCTV secured</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-sps-amber">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="section bg-panel">
+  <div class="container-sps">
+    {% if page_obj %}
+      <p style="color:var(--ink-600); margin-bottom:20px;">{{ page_obj.paginator.count }} lot{{ page_obj.paginator.count|pluralize }} found</p>
+      <div class="lot-grid">
+        {% for lot in page_obj %}
+        <a href="{{ lot.get_absolute_url }}" class="lot-card" style="display:block;">
+          <div class="lot-card-media">
+            {% if lot.image %}<img src="{{ lot.image.url }}" alt="{{ lot.name }}">{% endif %}
+            <span class="lot-card-badge">{{ lot.get_city_display }}</span>
+          </div>
+          <div class="lot-card-body">
+            <h3>{{ lot.name }}</h3>
+            <p class="lot-address">{{ lot.address }}</p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+              {% if lot.has_covered_parking %}<span class="badge-status badge-completed">Covered</span>{% endif %}
+              {% if lot.has_ev_charging %}<span class="badge-status badge-completed">EV charging</span>{% endif %}
+              {% if lot.has_cctv %}<span class="badge-status badge-completed">CCTV</span>{% endif %}
+            </div>
+            <div class="lot-card-meta">
+              {% if lot.available_slots_count == 0 %}
+                <span class="availability-pill full">Full</span>
+              {% elif lot.available_slots_count <= 3 %}
+                <span class="availability-pill low">{{ lot.available_slots_count }} left</span>
+              {% else %}
+                <span class="availability-pill free">{{ lot.available_slots_count }} open</span>
+              {% endif %}
+              <span>from Rs. {{ lot.hourly_rate_bike }}/hr</span>
+            </div>
+            <span class="lot-map-link">Open in Google Maps</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.has_other_pages %}
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:36px;">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&city={{ city }}&feature={{ feature }}" class="btn-sps-outline">Previous</a>
+        {% endif %}
+        <span style="align-self:center; color:var(--ink-600); font-size:0.9rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&city={{ city }}&feature={{ feature }}" class="btn-sps-outline">Next</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="sps-card text-center" style="max-width:440px; margin:0 auto;">
+        <h3>No lots match your search</h3>
+        <p style="color:var(--ink-600);">Try a different city or clear your filters.</p>
+        <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber">Clear filters</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

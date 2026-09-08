@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Sign up — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section" style="display:flex; align-items:center;">
+  <div class="container-sps" style="max-width:520px;">
+    <div class="sps-card">
+      <div class="text-center mb-4">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--traffic-blue);display:flex;align-items:center;justify-content:center;color:var(--lane-white);font-weight:800;margin:0 auto 14px;">P</div>
+        <h2 style="font-size:1.5rem;">Create your account</h2>
+        <p style="color:var(--ink-600); font-size:0.92rem;">Reserve parking bays in seconds in Dhangadhi and across Nepal.</p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="sps-alert danger mb-3" style="position:static;">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.first_name.id_for_label }}">First name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="text-danger form-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.last_name.id_for_label }}">Last name</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="text-danger form-error">{{ form.last_name.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.username.id_for_label }}">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}<div class="text-danger form-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.email.id_for_label }}">Email address</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="text-danger form-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.phone_number.id_for_label }}">Phone number</label>
+          {{ form.phone_number }}
+          {% if form.phone_number.errors %}<div class="text-danger form-error">{{ form.phone_number.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.password1.id_for_label }}">Password</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}<div class="text-danger form-error">{{ form.password1.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="{{ form.password2.id_for_label }}">Confirm password</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="text-danger form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+        <button type="submit" class="btn-sps-amber btn-block-amber">Create account</button>
+      </form>
+
+      <p class="text-center mt-4" style="font-size:0.9rem; color:var(--ink-600);">
+        Already have an account? <a href="{% url 'accounts:login' %}" class="text-amber" style="font-weight:600;">Log in</a>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

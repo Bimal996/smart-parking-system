@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ lot.name }} — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+
+<section class="section bg-asphalt" style="padding-top:48px; padding-bottom:36px;">
+  <div class="container-sps">
+    <a href="{% url 'parking:lot_list' %}" style="color:var(--ink-400); font-size:0.88rem;">&larr; Back to all lots</a>
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-top:12px;">
+      <div>
+        <h1 style="color:var(--lane-white); font-size:2rem; margin-bottom:6px;">{{ lot.name }}</h1>
+        <p style="color:var(--ink-400);">{{ lot.address }} &bull; {{ lot.get_city_display }}</p>
+      </div>
+      {% if lot.available_slots_count == 0 %}
+        <span class="availability-pill full">Full</span>
+      {% elif lot.available_slots_count <= 3 %}
+        <span class="availability-pill low">{{ lot.available_slots_count }} slots left</span>
+      {% else %}
+        <span class="availability-pill free">{{ lot.available_slots_count }} slots open</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section bg-panel">
+  <div class="container-sps">
+    <div class="lot-detail-layout" style="display:grid; grid-template-columns: 1.4fr 1fr; gap:32px;">
+      <div>
+        {% if lot.description %}
+          <p style="color:var(--ink-600); margin-bottom:24px;">{{ lot.description }}</p>
+        {% endif %}
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;">
+          {% if lot.has_covered_parking %}<span class="badge-status badge-completed">Covered parking</span>{% endif %}
+          {% if lot.has_ev_charging %}<span class="badge-status badge-completed">EV charging</span>{% endif %}
+          {% if lot.has_cctv %}<span class="badge-status badge-completed">CCTV secured</span>{% endif %}
+          <span class="badge-status badge-completed">
+            {% if lot.is_24_hours %}Open 24 hours{% else %}{{ lot.opening_time|time:"g:i A" }} – {{ lot.closing_time|time:"g:i A" }}{% endif %}
+          </span>
+        </div>
+
+        <div class="location-heading">
+          <h3 style="font-size:1.05rem; margin-bottom:14px;">Location</h3>
+          <a href="{{ lot.google_maps_url }}" target="_blank" rel="noopener" class="dashboard-link">Open in Google Maps</a>
+        </div>
+        <div style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--ink-200); margin-bottom:32px;">
+          <iframe
+            width="100%" height="280" style="border:0; display:block;"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            title="Map showing {{ lot.name }}"
+            src="https://www.google.com/maps?q={{ lot.latitude }},{{ lot.longitude }}&z=17&output=embed">
+          </iframe>
+        </div>
+
+        <h3 style="font-size:1.05rem; margin-bottom:14px;">Slot map</h3>
+        <div class="slot-grid lot-slot-grid" style="grid-template-columns: repeat(6, 1fr);">
+          {% for slot in slots %}
+            <div class="slot-chip {% if slot.status == 'available' %}free{% else %}taken{% endif %}"
+                 style="color:var(--ink-900); border-color:var(--ink-200); {% if slot.status == 'available' %}background:var(--signal-green-bg); color:var(--signal-green);{% else %}background:var(--signal-red-bg); color:var(--signal-red);{% endif %}"
+                 title="{{ slot.slot_number }} — {{ slot.get_status_display }}">
+              {{ slot.slot_number }}
+            </div>
+          {% empty %}
+            <p style="color:var(--ink-600); grid-column: 1 / -1;">Slot map will be published soon for this lot.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <div class="sps-card">
+          <h3 style="font-size:1.1rem; margin-bottom:6px;">Hourly rates</h3>
+          <div class="price-readout" style="margin:14px 0;">
+            <div class="row-line"><span>Bike / Scooter</span><span>Rs. {{ lot.hourly_rate_bike }} / hr</span></div>
+            <div class="row-line"><span>Car / SUV / Van / Truck</span><span>Rs. {{ lot.hourly_rate_car }} / hr</span></div>
+          </div>
+
+          {% if lot.available_slots_count > 0 %}
+            <a href="{% url 'reservations:create' lot.slug %}" class="btn-sps-amber btn-block-amber">Reserve a slot</a>
+          {% else %}
+            <button class="btn-sps-outline btn-block-amber" disabled style="opacity:0.6;">Lot is full</button>
+          {% endif %}
+          <p style="color:var(--ink-600); font-size:0.82rem; text-align:center; margin-top:12px; margin-bottom:0;">
+            {% if user.is_authenticated %}You'll choose your time window on the next step.{% else %}<a href="{% url 'accounts:login' %}?next={% url 'reservations:create' lot.slug %}" class="text-amber">Log in</a> to reserve.{% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Log in — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section" style="min-height:70vh; display:flex; align-items:center;">
+  <div class="container-sps" style="max-width:440px;">
+    <div class="sps-card">
+      <div class="text-center mb-4">
+        <div class="mark" style="width:44px;height:44px;border-radius:10px;background:var(--traffic-blue);display:flex;align-items:center;justify-content:center;color:var(--lane-white);font-weight:800;margin:0 auto 14px;">P</div>
+        <h2 style="font-size:1.5rem;">Welcome back</h2>
+        <p style="color:var(--ink-600); font-size:0.92rem;">Log in to manage your reservations.</p>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="sps-alert danger mb-3" style="position:static;">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="{{ form.username.id_for_label }}">Username</label>
+          {{ form.username }}
+        </div>
+        <div class="mb-3">
+          <label for="{{ form.password.id_for_label }}">Password</label>
+          {{ form.password }}
+        </div>
+        <button type="submit" class="btn-sps-amber btn-block-amber">Log in</button>
+      </form>
+
+      <p class="text-center mt-4" style="font-size:0.9rem; color:var(--ink-600);">
+        Don't have an account? <a href="{% url 'accounts:signup' %}" class="text-amber" style="font-weight:600;">Sign up</a>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

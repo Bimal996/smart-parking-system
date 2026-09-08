@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}My Profile — {{ site.SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container-sps" style="max-width:640px;">
+    <div class="section-eyebrow">Account</div>
+    <h2 class="mb-4">My profile</h2>
+
+    <div class="sps-card">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3 style="font-size:1.05rem; margin-bottom:16px;">Personal details</h3>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="{{ user_form.first_name.id_for_label }}">First name</label>
+            {{ user_form.first_name }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="{{ user_form.last_name.id_for_label }}">Last name</label>
+            {{ user_form.last_name }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="{{ user_form.email.id_for_label }}">Email</label>
+          {{ user_form.email }}
+        </div>
+
+
+        <h3 style="font-size:1.05rem; margin-bottom:16px;">Parking details</h3>
+        <div class="mb-3">
+          <label for="{{ profile_form.phone_number.id_for_label }}">Phone number</label>
+          {{ profile_form.phone_number }}
+        </div>
+        <div class="mb-3">
+          <label for="{{ profile_form.address.id_for_label }}">Address</label>
+          {{ profile_form.address }}
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="{{ profile_form.default_vehicle_type.id_for_label }}">Default vehicle type</label>
+            {{ profile_form.default_vehicle_type }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="{{ profile_form.default_vehicle_number.id_for_label }}">Default vehicle number</label>
+            {{ profile_form.default_vehicle_number }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn-sps-amber">Save changes</button>
+      </form>
+    </div>
+
+    <div class="sps-card mt-4">
+      <h3 style="font-size:1.05rem; margin-bottom:6px;">Log out</h3>
+      <p style="color:var(--ink-600); font-size:0.9rem; margin-bottom:16px;">You'll need to log in again to make new reservations.</p>
+      <button type="button" class="btn-sps-outline" data-bs-toggle="modal" data-bs-target="#logoutModal">Log out of ParkSmart</button>
+    </div>
+  </div>
+</section>
+{% endblock %}
