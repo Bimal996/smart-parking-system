@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-{% block title %}Dashboard — {{ site.SITE_NAME }}{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Dashboard — {{ site.SITE_NAME }} {%endblock %} {% block content %}
 
 <section class="dashboard-header">
   <div class="container-sps dashboard-header-inner">
@@ -9,62 +7,93 @@
       <h1>Welcome back, {{ user.first_name|default:user.username }}.</h1>
       <p>Manage reservations and find an available parking lot in Dhangadhi.</p>
     </div>
-    <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber">Find parking</a>
+    <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber"
+      >Find parking</a
+    >
   </div>
 </section>
 
 <section class="section dashboard-content">
   <div class="container-sps">
     <div class="dashboard-stats">
-      <div class="dashboard-stat"><span>Available lots</span><strong>{{ stats.total_lots }}</strong></div>
-      <div class="dashboard-stat"><span>Location</span><strong>Dhangadhi</strong></div>
-      <div class="dashboard-stat"><span>Booking access</span><strong>24/7</strong></div>
+      <div class="dashboard-stat">
+        <span>Available lots</span><strong>{{ stats.total_lots }}</strong>
+      </div>
+      <div class="dashboard-stat">
+        <span>Location</span><strong>Dhangadhi</strong>
+      </div>
+      <div class="dashboard-stat">
+        <span>Booking access</span><strong>24/7</strong>
+      </div>
     </div>
 
     <div class="dashboard-section-heading">
-      <div><p class="dashboard-kicker">Your account</p><h2>Recent reservations</h2></div>
-      <a href="{% url 'reservations:my_bookings' %}" class="dashboard-link">View all reservations</a>
+      <div>
+        <p class="dashboard-kicker">Your account</p>
+        <h2>Recent reservations</h2>
+      </div>
+      <a href="{% url 'reservations:my_bookings' %}" class="dashboard-link"
+        >View all reservations</a
+      >
     </div>
 
     {% if reservations %}
-      <div class="reservation-list">
-        {% for reservation in reservations %}
-          <a href="{% url 'reservations:detail' reservation.reference %}" class="reservation-item">
-            <div>
-              <strong>{{ reservation.lot.name }}</strong>
-              <span>{{ reservation.start_time|date:"d M Y, g:i A" }} &middot; Slot {{ reservation.slot.slot_number|default:"—" }}</span>
-            </div>
-            <div class="reservation-item-status">
-              <strong>Rs. {{ reservation.total_amount }}</strong>
-              <span class="badge-status badge-{{ reservation.status }}">{{ reservation.get_status_display }}</span>
-            </div>
-          </a>
-        {% endfor %}
-      </div>
+    <div class="reservation-list">
+      {% for reservation in reservations %}
+      <a
+        href="{% url 'reservations:detail' reservation.reference %}"
+        class="reservation-item"
+      >
+        <div>
+          <strong>{{ reservation.lot.name }}</strong>
+          <span
+            >{{ reservation.start_time|date:"d M Y, g:i A" }} &middot; Slot {{
+            reservation.slot.slot_number|default:"—" }}</span
+          >
+        </div>
+        <div class="reservation-item-status">
+          <strong>Rs. {{ reservation.total_amount }}</strong>
+          <span class="badge-status badge-{{ reservation.status }}"
+            >{{ reservation.get_status_display }}</span
+          >
+        </div>
+      </a>
+      {% endfor %}
+    </div>
     {% else %}
-      <div class="dashboard-empty">
-        <h3>No reservations yet</h3>
-        <p>Choose a parking lot to make your first reservation.</p>
-        <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber">Find parking</a>
-      </div>
+    <div class="dashboard-empty">
+      <h3>No reservations yet</h3>
+      <p>Choose a parking lot to make your first reservation.</p>
+      <a href="{% url 'parking:lot_list' %}" class="btn-sps-amber"
+        >Find parking</a
+      >
+    </div>
     {% endif %}
 
     <div class="dashboard-section-heading lots-heading">
-      <div><p class="dashboard-kicker">Dhangadhi parking</p><h2>Find an available lot</h2></div>
-      <a href="{% url 'parking:lot_list' %}" class="dashboard-link">Browse all lots</a>
+      <div>
+        <p class="dashboard-kicker">Dhangadhi parking</p>
+        <h2>Find an available lot</h2>
+      </div>
+      <a href="{% url 'parking:lot_list' %}" class="dashboard-link"
+        >Browse all lots</a
+      >
     </div>
 
     <div class="dashboard-lot-grid">
       {% for lot in lots %}
-        <a href="{{ lot.get_absolute_url }}" class="dashboard-lot">
-          <div class="dashboard-lot-top">
-            <span class="dashboard-lot-city">{{ lot.get_city_display }}</span>
-            {% if lot.available_slots_count > 0 %}<span class="availability-pill free">{{ lot.available_slots_count }} open</span>{% else %}<span class="availability-pill full">Full</span>{% endif %}
-          </div>
-          <h3>{{ lot.name }}</h3>
-          <p>{{ lot.address }}</p>
-          <span class="dashboard-lot-action">View lot details</span>
-        </a>
+      <a href="{{ lot.get_absolute_url }}" class="dashboard-lot">
+        <div class="dashboard-lot-top">
+          <span class="dashboard-lot-city">{{ lot.get_city_display }}</span>
+          {% if lot.available_slots_count > 0 %}<span
+            class="availability-pill free"
+            >{{ lot.available_slots_count }} open</span
+          >{% else %}<span class="availability-pill full">Full</span>{% endif %}
+        </div>
+        <h3>{{ lot.name }}</h3>
+        <p>{{ lot.address }}</p>
+        <span class="dashboard-lot-action">View lot details</span>
+      </a>
       {% endfor %}
     </div>
   </div>
